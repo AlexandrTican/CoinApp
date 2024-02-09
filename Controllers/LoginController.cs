@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoinAppAPI.Controllers
 {
@@ -39,7 +40,22 @@ namespace CoinAppAPI.Controllers
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        
+
+        [AllowAnonymous]
+        [HttpPost]
+
+        public IActionResult Login(Users user)
+        {
+            IActionResult response = Unauthorized();
+            var user_ = AuthenticateUser(user);
+            if (user_ != null)
+            {
+                var token = GenerateToken(user_);
+                response = Ok(new { token = token });
+            }
+
+            return response;
+        }
         
     }
         
